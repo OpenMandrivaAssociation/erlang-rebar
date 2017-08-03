@@ -1,0 +1,24 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Sat, 2 Mar 2013 13:35:36 +0400
+Subject: [PATCH] Remove any traces of long-time obsolete escript:foldl/3
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/rebar_utils.erl b/src/rebar_utils.erl
+index a5cc0ff..5947277 100644
+--- a/src/rebar_utils.erl
++++ b/src/rebar_utils.erl
+@@ -225,12 +225,7 @@ abort(String, Args) ->
+ %% undocumented exported fun and has been removed in R14.
+ escript_foldl(Fun, Acc, File) ->
+     {module, zip} = code:ensure_loaded(zip),
+-    case erlang:function_exported(zip, foldl, 3) of
+-        true ->
+-            emulate_escript_foldl(Fun, Acc, File);
+-        false ->
+-            escript:foldl(Fun, Acc, File)
+-    end.
++    emulate_escript_foldl(Fun, Acc, File).
+ 
+ find_executable(Name) ->
+     case os:find_executable(Name) of

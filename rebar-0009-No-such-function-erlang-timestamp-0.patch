@@ -1,0 +1,22 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Wed, 2 Mar 2016 13:52:44 +0300
+Subject: [PATCH] No such function erlang:timestamp/0
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/rebar_utils.erl b/src/rebar_utils.erl
+index 5947277..047594d 100644
+--- a/src/rebar_utils.erl
++++ b/src/rebar_utils.erl
+@@ -816,9 +816,9 @@ windows_temp_dir() ->
+     end.
+ 
+ rebar_now() ->
+-    case erlang:function_exported(erlang, timestamp, 0) of
++    case erlang:function_exported(os, timestamp, 0) of
+         true ->
+-            erlang:timestamp();
++            os:timestamp();
+         false ->
+             %% erlang:now/0 was deprecated in 18.0. One solution to avoid the
+             %% deprecation warning is to use

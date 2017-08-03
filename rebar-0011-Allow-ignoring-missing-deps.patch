@@ -1,0 +1,30 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Mon, 7 Mar 2016 16:55:33 +0300
+Subject: [PATCH] Allow ignoring missing deps
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/rebar_deps.erl b/src/rebar_deps.erl
+index 251bdee..577db64 100644
+--- a/src/rebar_deps.erl
++++ b/src/rebar_deps.erl
+@@ -163,12 +163,17 @@ do_check_deps(Config) ->
+         {Config1, {AvailDeps, []}} ->
+             %% No missing deps
+             {Config1, AvailDeps};
+-        {_Config1, {_, MissingDeps}} ->
++        {Config1, {AvailDeps, MissingDeps}} ->
+             lists:foreach(fun (#dep{app=App, vsn_regex=Vsn, source=Src}) ->
+                                   ?CONSOLE("Dependency not available: "
+                                            "~p-~s (~p)\n", [App, Vsn, Src])
+                           end, MissingDeps),
+-            ?FAIL
++            case os:getenv("IGNORE_MISSING_DEPS") of
++                false -> ?FAIL;
++                _ ->
++                    ?CONSOLE("Continue anyway because IGNORE_MISSING_DEPS was set\n", []),
++                    {Config1, lists:sort(AvailDeps ++ MissingDeps)}
++            end
+     end.
+ 
+ 'check-deps'(Config, _) ->

@@ -1,0 +1,25 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Sun, 6 Mar 2016 01:25:36 +0300
+Subject: [PATCH] Try shell variable VSN first
+
+Try shell variable VSN first before substituting version placeholder in
+app-file.
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/rebar_otp_app.erl b/src/rebar_otp_app.erl
+index b3566c8..187b1c3 100644
+--- a/src/rebar_otp_app.erl
++++ b/src/rebar_otp_app.erl
+@@ -116,7 +116,10 @@ preprocess(Config, AppSrcFile) ->
+ 
+ 
+             %% AppSrcFile may contain instructions for generating a vsn number
+-            {Config2, Vsn} = rebar_app_utils:app_vsn(Config1, AppSrcFile),
++            {Config2, Vsn} = case os:getenv("VSN") of
++                                 false -> rebar_app_utils:app_vsn(Config1, AppSrcFile);
++                                 V -> {Config1, V}
++                             end,
+             A2 = lists:keystore(vsn, 1, A1, {vsn, Vsn}),
+ 
+             %% systools:make_relup/4 fails with {missing_param, registered}

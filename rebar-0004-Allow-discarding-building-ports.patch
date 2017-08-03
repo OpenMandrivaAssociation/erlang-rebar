@@ -1,0 +1,26 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Tue, 5 Jun 2012 15:10:12 +0400
+Subject: [PATCH] Allow discarding building ports
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+Conflicts:
+	src/rebar_port_compiler.erl
+
+diff --git a/src/rebar_port_compiler.erl b/src/rebar_port_compiler.erl
+index 9679c80..0ba9e84 100644
+--- a/src/rebar_port_compiler.erl
++++ b/src/rebar_port_compiler.erl
+@@ -348,6 +348,12 @@ get_specs(Config, AppFile) ->
+                     %% No spec provided. Construct a spec
+                     %% from old-school so_name and sources
+                     [port_spec_from_legacy(Config, AppFile)];
++                [{null,[]}] ->
++                    [];
++                [null] ->
++                    [];
++                [skip] ->
++                    [];
+                 PortSpecs ->
+                     Filtered = filter_port_specs(PortSpecs),
+                     OsType = os:type(),
