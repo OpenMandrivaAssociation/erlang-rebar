@@ -7,12 +7,13 @@
 # (rebar) needs to get built first in bootstrap mode.
 %global need_bootstrap_set 1
 
+
 %{!?need_bootstrap: %global need_bootstrap  %{need_bootstrap_set}}
 
 
 Name:		erlang-%{realname}
 Version:	2.6.4
-Release:	%mkrel 1
+Release:	2
 Summary:	Erlang Build Tools
 Group:		Development/Tools
 License:	MIT
@@ -42,10 +43,12 @@ Patch10:	rebar-0010-Try-shell-variable-VSN-first.patch
 # Fedora/EPEL-specific - allow overriding missind deps error (versions
 # mismatch)
 Patch11:	rebar-0011-Allow-ignoring-missing-deps.patch
+Patch12:	rebar-0012-Don-t-use-deprecated-crypto-rand_uniform-2.patch
 
 %if 0%{?need_bootstrap} < 1
-BuildRequires:	erlang-eflame
 BuildRequires:	erlang-rebar
+# FIXME remove later and revisit getopt<->rebar bootstrapping
+BuildRequires:  erlang-getopt
 %else
 BuildRequires:	erlang-asn1
 BuildRequires:	erlang-common_test
@@ -54,23 +57,23 @@ BuildRequires:	erlang-crypto
 BuildRequires:	erlang-dialyzer
 BuildRequires:	erlang-diameter
 BuildRequires:	erlang-edoc
-BuildRequires:	erlang-eflame
+#BuildRequires:	erlang-eflame
 BuildRequires:	erlang-erl_interface
-BuildRequires:	erlang-erlydtl
-BuildRequires:	erlang-erts
+#BuildRequires:	erlang-erlydtl
+#BuildRequires:	erlang-erts
 BuildRequires:	erlang-eunit
-BuildRequires:	erlang-getopt
-BuildRequires:	erlang-kernel
+#BuildRequires:	erlang-getopt
+#BuildRequires:	erlang-kernel
 BuildRequires:	erlang-lfe
-BuildRequires:	erlang-mustache
-BuildRequires:	erlang-neotoma
+#BuildRequires:	erlang-mustache
+#BuildRequires:	erlang-neotoma
 BuildRequires:	erlang-parsetools
-BuildRequires:	erlang-protobuffs
+#BuildRequires:	erlang-protobuffs
 BuildRequires:	erlang-reltool
 BuildRequires:	erlang-rpm-macros
-BuildRequires:	erlang-sasl
+#BuildRequires:	erlang-sasl
 BuildRequires:	erlang-snmp
-BuildRequires:	erlang-stdlib
+#BuildRequires:	erlang-stdlib
 BuildRequires:	erlang-syntax_tools
 BuildRequires:	erlang-tools
 %endif
@@ -81,12 +84,38 @@ BuildRequires:	erlang-tools
 
 # This one cannot be picked up automatically
 # See https://bugzilla.redhat.com/960079
-Requires:	erlang-common_test%{?_isa}
+Requires:	erlang-common_test
 # Requires for port compiling - no direct references in Rebar's src/*.erl files
-Requires:	erlang-erl_interface%{?_isa}
+Requires:	erlang-erl_interface
 # This one cannot be picked up automatically
 # See https://bugzilla.redhat.com/960079
-Requires:	erlang-parsetools%{?_isa}
+Requires:	erlang-parsetools
+
+# FIXME (ROSA): should be detected automatically
+Requires:	erlang-asn1
+Requires:	erlang-compiler
+Requires:	erlang-crypto
+Requires:	erlang-dialyzer
+Requires:	erlang-diameter
+Requires:	erlang-edoc
+#Requires:	erlang-eflame
+#Requires:	erlang-erlydtl
+#Requires:	erlang-erts
+Requires:	erlang-eunit
+#Requires:	erlang-getopt
+#Requires:	erlang-kernel
+Requires:	erlang-lfe
+#Requires:	erlang-mustache
+#Requires:	erlang-neotoma
+#Requires:	erlang-protobuffs
+Requires:	erlang-reltool
+Requires:	erlang-rpm-macros
+#Requires:	erlang-sasl
+Requires:	erlang-snmp
+#Requires:	erlang-stdlib
+Requires:	erlang-syntax_tools
+Requires:	erlang-tools
+
 
 Requires:	erlang-rpm-macros >= 0.2.2
 Provides:	%{realname} = %{version}-%{release}
@@ -111,14 +140,11 @@ Erlang Build Tools.
 %patch9 -p1 -b .erlang_timestamp_0
 %patch10 -p1 -b .vsn_override
 %patch11 -p1 -b .skip_deps_checking
-
+%patch12 -p1 -b .erl20
 
 %build
 %if 0%{?need_bootstrap} < 1
 %{erlang_compile}
-# For using during tests
-install -D -p -m 0755 %{SOURCE1} ./rebar
-sed -i -e "s,-noshell -noinput,-noshell -noinput -pa %{buildroot}%{_erllibdir}/%{realname}-%{version}/ebin,g" ./rebar
 %else
 ./bootstrap
 ./rebar compile -v
@@ -135,33 +161,15 @@ cp -a priv %{buildroot}%{_erllibdir}/%{realname}-%{version}/
 
 %check
 %if 0%{?need_bootstrap} < 1
+# For using during tests
+install -D -p -m 0755 %{SOURCE1} ./rebar
+sed -i -e "s,-noshell -noinput,-noshell -noinput -pa .,g" ./rebar
 %{rebar_eunit}
 %endif
 
 
 %files
 %doc README.md THANKS rebar.config.sample
-%license LICENSE
+%doc LICENSE
 %{_bindir}/rebar
 %{erlang_appdir}/
-
-
-
-
-%changelog
-* Thu Nov 17 2016 neoclust <neoclust> 2.6.4-1.mga6
-+ Revision: 1067928
-- new version 2.6.4
-
-  + pterjan <pterjan>
-    - Disable bootstrap
-
-* Thu Jun 16 2016 tv <tv> 2.6.1-12.mga6
-+ Revision: 1021689
-- arm bootstrap
-
-* Fri May 06 2016 neoclust <neoclust> 2.6.1-11.mga6
-+ Revision: 1009775
-- Rebuild post boostrap
-- imported package erlang-rebar
-
