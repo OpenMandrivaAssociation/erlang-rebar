@@ -53,29 +53,29 @@ BuildRequires:  erlang-getopt
 BuildRequires:	erlang-asn1
 BuildRequires:	erlang-common_test
 BuildRequires:	erlang-compiler
-BuildRequires:	erlang-crypto
-BuildRequires:	erlang-dialyzer
-BuildRequires:	erlang-diameter
-BuildRequires:	erlang-edoc
+#BuildRequires:	erlang-crypto
+#BuildRequires:	erlang-dialyzer
+#BuildRequires:	erlang-diameter
+#BuildRequires:	erlang-edoc
 #BuildRequires:	erlang-eflame
-BuildRequires:	erlang-erl_interface
+#BuildRequires:	erlang-erl_interface
 #BuildRequires:	erlang-erlydtl
 #BuildRequires:	erlang-erts
 BuildRequires:	erlang-eunit
 #BuildRequires:	erlang-getopt
 #BuildRequires:	erlang-kernel
-BuildRequires:	erlang-lfe
+#BuildRequires:	erlang-lfe
 #BuildRequires:	erlang-mustache
 #BuildRequires:	erlang-neotoma
 BuildRequires:	erlang-parsetools
 #BuildRequires:	erlang-protobuffs
-BuildRequires:	erlang-reltool
+#BuildRequires:	erlang-reltool
 BuildRequires:	erlang-rpm-macros
 #BuildRequires:	erlang-sasl
-BuildRequires:	erlang-snmp
+#BuildRequires:	erlang-snmp
 #BuildRequires:	erlang-stdlib
 BuildRequires:	erlang-syntax_tools
-BuildRequires:	erlang-tools
+#BuildRequires:	erlang-tools
 %endif
 
 # FIXME wip
