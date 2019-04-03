@@ -1,0 +1,32 @@
+From: Peter Lemenkov <lemenkov@gmail.com>
+Date: Fri, 14 Sep 2018 18:46:29 +0300
+Subject: [PATCH] Don't use deprecated crypto:rand_uniform/2
+
+Signed-off-by: Peter Lemenkov <lemenkov@gmail.com>
+
+diff --git a/src/rebar_ct.erl b/src/rebar_ct.erl
+index b27f661..9b440fc 100644
+--- a/src/rebar_ct.erl
++++ b/src/rebar_ct.erl
+@@ -288,7 +288,7 @@ search_ct_specs_from(Cwd, TestDir, Config) ->
+ build_name(Config) ->
+     %% generate a unique name for our test node, we want
+     %% to make sure the odds of name clashing are low
+-    Random = integer_to_list(crypto:rand_uniform(0, 10000)),
++    Random = integer_to_list(rand:uniform(10000) - 1),
+     case rebar_config:get_local(Config, ct_use_short_names, false) of
+         true -> "-sname test" ++ Random;
+         false -> " -name test" ++ Random ++ "@" ++ net_adm:localhost()
+diff --git a/src/rebar_eunit.erl b/src/rebar_eunit.erl
+index 19c3138..b3398a8 100644
+--- a/src/rebar_eunit.erl
++++ b/src/rebar_eunit.erl
+@@ -277,7 +277,7 @@ randomize_suites(Config, Modules) ->
+         undefined ->
+             Modules;
+         "true" ->
+-            Seed = crypto:rand_uniform(1, 65535),
++            Seed = rand:uniform(65535) - 1,
+             randomize_suites1(Modules, Seed);
+         String ->
+             try list_to_integer(String) of
